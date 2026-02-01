@@ -1,0 +1,85 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: lab_assistant_db
+    environment:
+      POSTGRES_USER: labassistant
+      POSTGRES_PASSWORD: labassistant
+      POSTGRES_DB: labassistant
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U labassistant -d labassistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lab_assistant_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: lab_assistant_api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://labassistant:labassistant@db:5432/labassistant
+      REDIS_URL: redis://redis:6379
+      USE_REAL_LLM: "false"
+      LLM_API_KEY: ""
+      LLM_MODEL: "gpt-4"
+    volumes:
+      - ./api:/app/api:ro
+      - ./worker:/app/worker:ro
+      - ./data:/app/data:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: lab_assistant_worker
+    environment:
+      DATABASE_URL: postgresql://labassistant:labassistant@db:5432/labassistant
+      REDIS_URL: redis://redis:6379
+      USE_REAL_LLM: "false"
+      LLM_API_KEY: ""
+      LLM_MODEL: "gpt-4"
+    volumes:
+      - ./api:/app/api:ro
+      - ./worker:/app/worker:ro
+      - ./data:/app/data:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

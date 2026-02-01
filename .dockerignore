@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Tests (optional - include if you want to run tests in container)
+# tests/
+
+# Misc
+.env.local
+*.log
+.DS_Store
+Thumbs.db
