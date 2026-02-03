@@ -192,3 +192,5 @@ Environment variables (see `docker-compose.yml`):
 └── .github/workflows/  # CI pipeline
 ```
 
+## Updates:
+Currently working on a frontend user friendly UI using React.
