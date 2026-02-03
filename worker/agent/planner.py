@@ -211,24 +211,35 @@ Example response:
   ]
 }}"""
 
+    def _extract_output_text(payload: dict) -> str:
+        for item in payload.get("output", []):
+            if item.get("type") == "message":
+                for part in item.get("content", []):
+                    if part.get("type") == "output_text":
+                        return part.get("text", "")
+        output_text = payload.get("output_text")
+        return output_text if isinstance(output_text, str) else ""
+
     try:
         response = httpx.post(
-            "https://api.openai.com/v1/chat/completions",
+            "https://api.openai.com/v1/responses",
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json={
                 "model": model,
-                "messages": [{"role": "user", "content": prompt}],
+                "input": prompt,
                 "temperature": 0.2,
-                "response_format": {"type": "json_object"},
+                "text": {"format": {"type": "json_object"}},
             },
             timeout=30,
         )
         response.raise_for_status()
         data = response.json()
-        content = data["choices"][0]["message"]["content"]
+        content = _extract_output_text(data)
+        if not content:
+            raise ValueError("Empty response content from LLM planner")
         plan_data = json.loads(content)
         return AgentPlan(**plan_data)
     except Exception as e:

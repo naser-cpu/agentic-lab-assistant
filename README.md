@@ -166,7 +166,7 @@ Environment variables (see `docker-compose.yml`):
 | `REDIS_URL` | `redis://redis:6379` | Redis connection string |
 | `USE_REAL_LLM` | `false` | Enable real LLM (requires `LLM_API_KEY`) |
 | `LLM_API_KEY` | - | API key for LLM provider |
-| `LLM_MODEL` | `gpt-4` | LLM model to use |
+| `LLM_MODEL` | `gpt-4.1` | LLM model to use |
 
 ## Project Structure
 
