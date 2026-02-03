@@ -1,8 +1,9 @@
 """Pytest configuration and fixtures."""
 
 import os
+
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Set test environment
@@ -12,10 +13,6 @@ os.environ.setdefault(
 )
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379")
 os.environ.setdefault("USE_REAL_LLM", "false")
-
-from api.database import get_db
-from api.models import Base
-
 
 @pytest.fixture(scope="session")
 def db_engine():
@@ -45,6 +42,7 @@ def db_session(db_engine):
 def test_client():
     """Create FastAPI test client."""
     from fastapi.testclient import TestClient
+
     from api.main import app
 
     with TestClient(app) as client:

@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import or_, text
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from api.models import Incident

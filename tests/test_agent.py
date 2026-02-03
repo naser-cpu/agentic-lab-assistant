@@ -1,17 +1,16 @@
 """Tests for agent components."""
 
 import os
-import pytest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # Ensure we're using deterministic planner
 os.environ["USE_REAL_LLM"] = "false"
 
-from api.schemas import AgentPlan, AgentResult, PlanStep
-from worker.agent.planner import create_plan, _needs_docs, _needs_incidents, _extract_keywords
+from api.schemas import AgentPlan, AgentResult
 from worker.agent.executor import execute_plan, _synthesize_deterministic
-from worker.agent.tools import search_docs, query_incidents
+from worker.agent.planner import _extract_keywords, _needs_docs, _needs_incidents, create_plan
+from worker.agent.tools import query_incidents, search_docs
 
 
 class TestPlanner:
@@ -191,6 +190,7 @@ class TestEndToEnd:
     def test_result_schema_compliance(self, db_session):
         """Test that results comply with expected schema."""
         import json
+
         import jsonschema
 
         # Load schema

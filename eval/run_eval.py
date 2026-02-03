@@ -6,7 +6,6 @@ Runs test prompts through the agent and validates outputs against schema.
 """
 
 import json
-import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,7 +16,6 @@ import jsonschema
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from api.database import get_db_session
-from api.schemas import AgentPlan
 from worker.agent.executor import execute_plan
 from worker.agent.planner import create_plan
 
@@ -179,9 +177,9 @@ def run_all_evals() -> tuple[list[EvalResult], dict]:
         results.append(result)
 
         if result.passed:
-            print(f"  ✓ PASSED")
+            print("  ✓ PASSED")
         else:
-            print(f"  ✗ FAILED")
+            print("  ✗ FAILED")
             for error in result.errors:
                 print(f"    - {error}")
 
